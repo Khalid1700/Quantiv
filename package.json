@@ -1,6 +1,6 @@
 {
   "name": "excel-business-toolkit",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Business dashboards desktop app (Electron + SQLite)",
   "author": "Khalid",
   "main": "main.js",
