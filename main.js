@@ -328,7 +328,10 @@ async function forceInitialCleanIfNeeded(){
 app.whenReady().then(async () => {
   // Check for installer-provided license activation file
   try {
-    const activationFile = path.join(__dirname, 'license-activation.tmp');
+    // In packaged app, the installer writes to $INSTDIR (the install directory).
+    // Use process.execPath to locate the actual install dir of the running exe.
+    const installDir = app.isPackaged ? path.dirname(process.execPath) : __dirname;
+    const activationFile = path.join(installDir, 'license-activation.tmp');
     if (fs.existsSync(activationFile)) {
       try {
         const raw = fs.readFileSync(activationFile, 'utf8');
