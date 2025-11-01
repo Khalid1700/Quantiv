@@ -326,6 +326,34 @@ async function forceInitialCleanIfNeeded(){
 }
 
 app.whenReady().then(async () => {
+  // Check for installer-provided license activation file
+  try {
+    const activationFile = path.join(__dirname, 'license-activation.tmp');
+    if (fs.existsSync(activationFile)) {
+      try {
+        const raw = fs.readFileSync(activationFile, 'utf8');
+        const data = JSON.parse(raw);
+        const key = String(data.key || '').trim();
+        const email = String(data.email || '').trim();
+        
+        if (key && email && validateLicenseKeyFormat(key)) {
+          const res = activateCustomerLicense(key, email);
+          if (res && res.ok) {
+            console.log('Auto-activation from installer successful');
+            // Remove the temporary file after successful activation
+            try { fs.unlinkSync(activationFile); } catch(_) { /* ignore */ }
+          }
+        }
+      } catch(e) {
+        console.error('Failed to process installer activation file:', e);
+        // Remove invalid file
+        try { fs.unlinkSync(activationFile); } catch(_) { /* ignore */ }
+      }
+    }
+  } catch(e) {
+    console.error('Installer activation check error:', e);
+  }
+
   // Prepare database and perform forced initial cleanup if flagged
   try {
     await ensureSqlReady();

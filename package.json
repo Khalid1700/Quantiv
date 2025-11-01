@@ -46,7 +46,8 @@
       "installerHeader": "public/installer/installerHeader.bmp",
       "installerSidebar": "public/installer/installerSidebar.bmp",
       "runAfterFinish": true,
-      "license": "LICENSE.txt"
+      "license": "LICENSE.txt",
+      "include": "tools/installer-script.nsh"
     }
   },
   "scripts": {
