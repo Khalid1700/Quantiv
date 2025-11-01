@@ -3,6 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 const sharp = require('sharp');
+const bmp = require('bmp-js');
 
 async function ensureDir(p){
   if(!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
@@ -79,9 +80,10 @@ async function makeHeaderBMP(){
     <text x="117" y="21" text-anchor="middle" font-family="Segoe UI, Arial" font-size="10" font-weight="700" fill="url(#brandText)">By Khalid.Agents</text>
   </svg>`);
   comp = comp.composite([{ input: await sharp(labelSvg).png().toBuffer(), top: 0, left: 0 }]);
-  // Sharp does not support BMP output; rely on committed asset or future encoder
-  // Leave a friendly message if generation was attempted without asset
-  throw new Error('BMP output not supported by sharp; please provide public/installer/installerHeader.bmp');
+  // Encode final RGBA buffer into BMP using bmp-js
+  const { data, info } = await comp.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const bmpBuf = bmp.encode({ data, width: info.width, height: info.height }).data;
+  fs.writeFileSync(headerOut, bmpBuf);
 }
 
 async function makeSidebarBMP(){
@@ -141,8 +143,10 @@ async function makeSidebarBMP(){
     <text x="82" y="290" text-anchor="middle" font-family="Segoe UI, Arial" font-size="12" font-weight="700" fill="url(#brandText2)">By Khalid.Agents</text>
   </svg>`);
   comp = comp.composite([{ input: await sharp(labelSvg).png().toBuffer(), top: 0, left: 0 }]);
-  // Sharp does not support BMP output; rely on committed asset or future encoder
-  throw new Error('BMP output not supported by sharp; please provide public/installer/installerSidebar.bmp');
+  // Encode final RGBA buffer into BMP using bmp-js
+  const { data, info } = await comp.ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const bmpBuf = bmp.encode({ data, width: info.width, height: info.height }).data;
+  fs.writeFileSync(sidebarOut, bmpBuf);
 }
 
 async function main(){
