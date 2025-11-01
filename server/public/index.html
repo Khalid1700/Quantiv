@@ -226,6 +226,38 @@
       border: 1px solid rgba(239, 68, 68, 0.3);
       color: #F87171;
     }
+
+    /* Centered success modal overlay with brand identity */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.6);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .modal-card {
+      width: min(520px, 92vw);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+      padding: 24px;
+      text-align: center;
+    }
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00B894, #00D4FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 10px 0;
+    }
+    .modal-desc { color: #CBD5E1; margin: 0 0 16px 0; }
+    .modal-actions { display: flex; gap: 10px; justify-content: center; }
     
     .license-card {
       background: rgba(255, 255, 255, 0.03);
@@ -284,6 +316,31 @@
       'macos-intel': { name: 'macOS Intel (.dmg)' },
       'macos-apple': { name: 'macOS Apple Silicon (.dmg)' }
     };
+    // Helper to read query params (for token)
+    function getQueryParam(name){
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+    const downloadToken = getQueryParam('token');
+
+    // Ensure a token exists for testing: auto-create if missing
+    async function ensureToken(){
+      if (downloadToken) return;
+      try {
+        const resp = await fetch('/token/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        const data = await resp.json();
+        if (data && data.ok && data.token){
+          window.__downloadToken = data.token;
+          try { history.replaceState(null, '', `/?token=${encodeURIComponent(data.token)}`); } catch(_) {}
+        }
+      } catch(e){
+        console.warn('Auto token create failed:', e);
+      }
+    }
 
     async function downloadApp(){
       const name = document.getElementById('name').value.trim();
@@ -292,79 +349,32 @@
       const version = document.getElementById('version').value.trim() || '1.0.0';
 
       const status = document.getElementById('status');
-      // التنزيل تلقائي؛ لا حاجة لزر أو رابط إضافي
-
-      // Clear previous results
       status.className = 'status loading';
-      status.textContent = 'جاري إصدار الترخيص وتحضير التحميل...';
-      // لا عناصر تنزيل مرئية إضافية
+      status.textContent = 'جاري تجهيز الحزمة للتحميل مرة واحدة...';
+
+      const token = window.__downloadToken || downloadToken;
+      if (!token) {
+        status.className = 'status error';
+        status.textContent = 'لا يوجد توكين صالح في الرابط. يرجى الرجوع من صفحة الدفع.';
+        return;
+      }
 
       try{
-        let res, data;
-        
-        // Issue license (no auto OS detection; no hardcoded asset)
-        res = await fetch('/issue', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            name, 
-            email, 
-            version 
-          })
-        });
+        const url = `/download?token=${encodeURIComponent(token)}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&os=${encodeURIComponent(installerType)}&version=${encodeURIComponent(version)}`;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
 
-        data = await res.json();
-        
-        if (!data.ok) {
-          status.className = 'status error';
-          status.textContent = 'تعذّر إصدار الترخيص: ' + (data.reason === 'missing_name_or_email' ? 'يرجى إدخال الاسم والبريد الإلكتروني' : data.reason || 'خطأ غير معروف');
-          return;
-        }
-
-        // لا نعرض المفتاح؛ التفعيل تلقائي
-        
-        // Show success message
         status.className = 'status success';
-        status.textContent = 'تم إصدار الترخيص بنجاح! سيبدأ تنزيل المثبت تلقائيًا.';
+        status.textContent = 'تم بدء التحميل بنجاح. هذا التحميل مسموح لمرة واحدة فقط.';
 
-        // Trigger license file download for auto-activation
-        if (data.licenseKey && email) {
-          const licUrl = `/license-file?key=${encodeURIComponent(data.licenseKey)}&email=${encodeURIComponent(email)}`;
-          const a = document.createElement('a');
-          a.href = licUrl;
-          a.download = 'Quantiv-license.json';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }
-
-        // Resolve installer asset from GitHub based on selected OS
-        try {
-          const r = await fetch('/resolve', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ os: installerType, version })
-          });
-          const rd = await r.json();
-          if (rd && rd.ok && rd.downloadUrl) {
-            const a2 = document.createElement('a');
-            a2.href = rd.downloadUrl;
-            a2.download = '';
-            document.body.appendChild(a2);
-            a2.click();
-            document.body.removeChild(a2);
-          } else {
-            status.className = 'status error';
-            status.textContent = 'تعذّر العثور على ملف المثبت المناسب عبر GitHub.';
-          }
-        } catch (e2) {
-          status.className = 'status error';
-          status.textContent = 'فشل استعلام رابط التحميل عبر GitHub: ' + e2.message;
-        }
-
-      } catch(e) {
+        showSuccessActions();
+      } catch(e){
         status.className = 'status error';
-        status.textContent = 'حدث خطأ في الاتصال بالخادم: ' + e.message;
+        status.textContent = 'حدث خطأ أثناء التحضير: ' + e.message;
       }
     }
 
@@ -386,7 +396,8 @@
     // لا يتم اختيار النظام تلقائياً، يجب على المستخدم اختيار نوع النظام
 
     // Initialize page
-    window.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('DOMContentLoaded', async function() {
+      await ensureToken();
       const nameInput = document.getElementById('name');
       const emailInput = document.getElementById('email');
       const installerSelect = document.getElementById('installer');
@@ -399,6 +410,31 @@
       // التحقق الأولي فقط
       validateForm();
   });
+
+  function showSuccessActions(){
+    const overlay = document.getElementById('successOverlay');
+    if (!overlay) return;
+    overlay.style.display = 'flex';
+    const btnClose = document.getElementById('btnClose');
+    const btnInstructions = document.getElementById('btnInstructions');
+    if (btnClose) btnClose.onclick = () => {
+      // خروج دائم من البوابة: توجيه إلى /exit لتعطيل التوكن ومحاولة إغلاق الصفحة
+      const token = (window.__downloadToken || downloadToken || '');
+      const exitUrl = `/exit?token=${encodeURIComponent(token)}`;
+      window.location.href = exitUrl;
+    };
+    if (btnInstructions) btnInstructions.onclick = () => {
+      window.open('/docs/instructions.pdf', '_blank');
+    };
+    // إغلاق عند الضغط خارج البطاقة
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.style.display = 'none';
+    });
+    // إغلاق عبر زر Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') overlay.style.display = 'none';
+    });
+  }
   </script>
 </head>
 <body>
@@ -450,6 +486,17 @@
       
     </div>
     <div id="status" class="status">&nbsp;</div>
+
+    <div id="successOverlay" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-title">تم التحميل بنجاح</div>
+        <p class="modal-desc">شكراً لك! تم تجهيز الحزمة وتنزيلها. بإمكانك تحميل إرشادات التشغيل (PDF) أو إغلاق النافذة.</p>
+        <div class="modal-actions">
+          <button id="btnClose" class="btn btn-secondary">إغلاق الصفحة</button>
+          <button id="btnInstructions" class="btn btn-primary">تحميل إرشادات التشغيل (PDF)</button>
+        </div>
+      </div>
+    </div>
 
     <!-- تم إزالة بطاقة مفتاح الترخيص: جميع إجراءات التثبيت والتفعيل تتم تلقائياً -->
 

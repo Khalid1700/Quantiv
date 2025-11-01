@@ -62,14 +62,17 @@
     "clean": "rimraf dist",
     "rebuild": "echo Native rebuild disabled; no native modules required",
     "postinstall": "echo Skipping electron-rebuild during install",
-    "license-server": "node server/license-server.js"
+    "license-server": "node server/license-server.js",
+    "client:package": "node tools/make-client-package.js"
   },
   "dependencies": {
     "electron-store": "^8.2.0",
     "sql.js": "^1.9.0",
     "express": "^4.19.2",
     "cors": "^2.8.5",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "archiver": "^6.0.0",
+    "pdfkit": "^0.13.0"
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.1",
