@@ -5,7 +5,7 @@
   "main": "main.js",
   "build": {
     "npmRebuild": false,
-    "publish": false,
+    "publish": "never",
     "appId": "com.yourcompany.ebt",
     "productName": "Quantiv",
     "directories": {
