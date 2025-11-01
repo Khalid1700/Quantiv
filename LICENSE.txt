@@ -1,0 +1,28 @@
+Quantiv End-User License Agreement (EULA)
+
+1. Grant of License
+You are granted a non-transferable, non-exclusive license to install and use one copy of Quantiv on a single device.
+
+2. Restrictions
+- You may not rent, lease, sell, sublicense, or distribute the software.
+- You may not reverse-engineer, decompile, or disassemble the software.
+- You may not bypass or attempt to bypass license protections.
+
+3. Ownership
+The software is licensed, not sold. All rights remain with the author.
+
+4. Device Binding
+This software binds to the device during first activation and will not operate on other devices without authorization.
+
+5. Warranties
+The software is provided “as is” without warranties of any kind.
+
+6. Liability
+In no event shall the author be liable for any damages arising from use of the software.
+
+7. Termination
+This license is effective until terminated. Violation of terms terminates the license automatically.
+
+8. Contact
+For licensing and support, contact the vendor or seller.
+

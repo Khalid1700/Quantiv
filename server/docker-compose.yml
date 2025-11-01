@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  license-server:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    environment:
+      - PORT=8088
+      - GITHUB_OWNER=${GITHUB_OWNER:-khalid1700}
+      - GITHUB_REPO=${GITHUB_REPO:-Quantiv}
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - ALLOW_ANY_ASSET=true
+      - NODE_ENV=${NODE_ENV:-production}
+    env_file:
+      - ../.env
+    ports:
+      - "8088:8088"
+    restart: unless-stopped
+    volumes:
+      - ../public:/app/public:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+

@@ -1,0 +1,14 @@
+System Requirements
+- Windows 10/11 (x64), Node/Electron runtime bundled
+
+Install Steps
+1) Run Quantiv-Setup-1.0.0.exe
+2) Choose destination directory (nonâ€“one-click, NSIS wizard)
+3) Finish and launch from Start Menu or Desktop
+
+Uninstall
+- Use "Apps & Features" entry "Quantiv" or run Uninstall.exe in the install folder
+
+Known Limitations
+- Unsigned test build: Windows SmartScreen may show a warning. Choose "More info" â†’ "Run anyway".
+- Auto-update is disabled for this build.

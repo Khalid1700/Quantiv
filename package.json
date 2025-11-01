@@ -1,0 +1,82 @@
+{
+  "name": "excel-business-toolkit",
+  "version": "1.0.0",
+  "description": "Business dashboards desktop app (Electron + SQLite)",
+  "main": "main.js",
+  "build": {
+    "npmRebuild": false,
+    "appId": "com.yourcompany.ebt",
+    "productName": "Quantiv",
+    "directories": {
+      "buildResources": "public/icons",
+      "output": "App Dist Windows"
+    },
+    "files": [
+      "public/**/*",
+      "main.js",
+      "preload.js",
+      "package.json",
+      "node_modules/sql.js/dist/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/sql.js/dist/**"
+    ],
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "win": {
+      "icon": "public/icons/app.ico",
+      "target": ["nsis"],
+      "artifactName": "${productName}-Setup-${version}.exe"
+    },
+    "linux": {
+      "icon": "public/icons",
+      "category": "Office"
+    },
+    "mac": {
+      "icon": "public/icons/app.icns",
+      "category": "public.app-category.productivity",
+      "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
+      "target": ["dmg"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerHeader": "public/installer/installerHeader.bmp",
+      "installerSidebar": "public/installer/installerSidebar.bmp",
+      "runAfterFinish": true,
+      "license": "LICENSE.txt"
+    }
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "dist": "node tools/force-clean-flag.js on && node tools/clean-output.js && node tools/make-installer-assets.js && electron-builder --win -c.directories.output=\"App Dist Windows\" && node tools/force-clean-flag.js off",
+    "dist:win": "node tools/force-clean-flag.js on && node tools/clean-output.js && node tools/make-installer-assets.js && electron-builder --win -c.directories.output=\"App Dist Windows\" && node tools/force-clean-flag.js off",
+    "dist:win:test": "node tools/test-build-flag.js on && node tools/force-clean-flag.js on && node tools/clean-output.js && node tools/make-installer-assets.js && electron-builder --win -c.directories.output=\"TEST WIN INSTALL\" && node tools/test-build-flag.js off && node tools/force-clean-flag.js off",
+    "dist:mac": "node tools/make-installer-assets.js && electron-builder --mac -c.directories.output=\"App Dist macOS\"",
+    "icons": "node tools/make-icons.js",
+    "clean": "rimraf dist",
+    "rebuild": "echo Native rebuild disabled; no native modules required",
+    "postinstall": "echo Skipping electron-rebuild during install",
+    "license-server": "node server/license-server.js"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "sql.js": "^1.9.0",
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.1",
+    "electron": "^31.3.0",
+    "electron-builder": "^24.9.1",
+    "http-server": "^14.1.1",
+    "icon-gen": "^5.0.0",
+    "sharp": "^0.34.4",
+    "to-ico": "^1.1.5",
+    "bmp-js": "^0.1.0"
+  }
+}

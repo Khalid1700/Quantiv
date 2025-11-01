@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob: https://cdn.jsdelivr.net https://fonts.gstatic.com; script-src 'self' https://cdn.jsdelivr.net https://cdn.jsdelivr.net/npm; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://api.openai.com; base-uri 'self'; form-action 'self';">
+  <title>Quantiv</title>
+  <link rel="icon" type="image/png" href="./icons/app-64.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Arabic-capable font for high-quality PDF export -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles/theme.css">
+  <link rel="stylesheet" href="./styles/components.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <aside id="sidebar" class="sidebar"></aside>
+    <main class="main-area">
+      <header id="toolbar" class="toolbar"></header>
+      <section id="view-root" class="view-root" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Vendor: Chart.js (can be vendored later) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Vendor: jsPDF for PDF export -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <!-- Vendor: html2canvas for better Arabic text rendering in PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- State and Utils -->
+  <script src="./state/store.js"></script>
+  <script src="./utils/dbManager.js"></script>
+  <script src="./utils/aiClient.js"></script>
+  <script src="./utils/branding.js"></script>
+  <script src="./utils/appCleaner.js"></script>
+  <!-- Components -->
+  <script src="./components/Sidebar.js"></script>
+  <script src="./components/Toolbar.js"></script>
+  <!-- Views -->
+  <script src="./views/DashboardView.js"></script>
+  <script src="./views/InventoryView.js"></script>
+  <script src="./views/InvoicesView.js"></script>
+  <script src="./views/ReportsView.js"></script>
+  <script src="./views/FeasibilityView.js"></script>
+  <script src="./views/StoreSettingsView.js"></script>
+  <script src="./views/SmartAssistantSettingsView.js"></script>
+  <script src="./views/SmartAssistantGuideView.js"></script>
+  <!-- License Management -->
+  <script src="./components/LicenseActivation.js"></script>
+  <!-- App bootstrap -->
+  <script src="./app.js"></script>
+</body>
+</html>

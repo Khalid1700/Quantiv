@@ -1,0 +1,48 @@
+:root{
+  --bg-0:#0B0F16;
+  --bg-1:#0E1421;
+  --fg:#E2E8F0;
+  --muted:#94A3B8;
+  --muted-2:#64748B;
+  --chip:rgba(255,255,255,0.06);
+  --chip-border:rgba(255,255,255,0.18);
+  --primary-start:#00B894;
+  --primary-end:#38BDF8;
+  --glow:rgba(56,189,248,0.35);
+  --card-bg:rgba(255,255,255,0.05);
+  --radius:16px;
+  --shadow:0 10px 30px rgba(0,0,0,0.35);
+  /* Layout variables */
+  --sidebar-w:260px;
+}
+*{box-sizing:border-box}
+html,body{height:100%; overflow:hidden}
+body{
+  margin:0; color:var(--fg);
+  font-family:'Inter','Poppins','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:linear-gradient(135deg,var(--bg-0) 0%,var(--bg-1) 60%,var(--bg-0) 100%);
+  background-attachment:fixed;
+}
+.app-shell{display:flex;height:100dvh; overflow:hidden}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:rgba(10,15,25,0.8);border:1px solid var(--chip-border);
+  border-radius:12px;padding:.8rem 1rem;box-shadow:var(--shadow);z-index:50;display:none}
+.toast.show{display:block}
+.glass{
+  background:var(--card-bg);
+  border:1px solid var(--chip-border);
+  backdrop-filter:blur(12px);
+}
+
+/* Themed scrollbars (consistent across app); dark style with brand accents */
+@supports (scrollbar-color: red blue){
+  *{scrollbar-color: var(--primary-end) rgba(255,255,255,0.08); scrollbar-width: thin}
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:rgba(255,255,255,0.05)}
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg, var(--primary-start), var(--primary-end));
+  border-radius:10px;
+  border:2px solid rgba(11,15,22,0.5);
+}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg, var(--primary-end), var(--primary-start))}
