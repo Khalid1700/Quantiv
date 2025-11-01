@@ -20,9 +20,7 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build Windows installer
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Windows installer (no publish)
         run: npm run dist:win
 
       - name: Upload artifact (Windows)
@@ -31,33 +29,7 @@ jobs:
           name: windows-installer
           path: App Dist Windows/*.exe
 
-  build_mac:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Build macOS installer
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: npm run dist:mac
-
-      - name: Upload artifact (macOS)
-        uses: actions/upload-artifact@v4
-        with:
-          name: mac-installer
-          path: App Dist macOS/*.dmg
+  # build_mac temporarily disabled until Apple signing secrets are configured
 
   publish_release:
     needs: [build_win]
