@@ -29,5 +29,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   licenseCheckStatus: () => ipcRenderer.invoke('license-check-status'),
   licenseActivate: (licenseKey, customerEmail) => ipcRenderer.invoke('license-activate', licenseKey, customerEmail),
   licenseGetInfo: () => ipcRenderer.invoke('license-get-info'),
-  licenseDeactivate: () => ipcRenderer.invoke('license-deactivate')
+  licenseDeactivate: () => ipcRenderer.invoke('license-deactivate'),
+
+  // Deeplink listener: quantiv://activate?key=...&email=...
+  onLicenseDeeplink: (cb) => {
+    try { ipcRenderer.on('license:deeplink', (_event, data) => { try{ cb(data); }catch(_){} }); } catch(_){/* noop */}
+  }
 });

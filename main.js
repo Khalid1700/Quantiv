@@ -52,6 +52,32 @@ if(isTestBuild){
 
 
 let win;
+let pendingDeepLink = null;
+
+function handleDeeplink(url){
+  try{
+    if(!url) return;
+    const u = new URL(url);
+    const action = (u.hostname || '').toLowerCase() || (u.pathname || '').replace(/^\//,'').toLowerCase();
+    if(action.includes('activate')){
+      const key = (u.searchParams.get('key') || '').trim();
+      const email = (u.searchParams.get('email') || '').trim();
+      if(validateLicenseKeyFormat(key)){
+        const res = activateCustomerLicense(key, email);
+        if(win && win.webContents){
+          win.webContents.send('license:deeplink', { source:'deeplink', key, email, result: res });
+        }
+        if(res && res.ok){
+          dialog.showMessageBox({ type:'info', title:'تم التفعيل', message:'تم تفعيل الترخيص بنجاح عبر الرابط.' });
+        } else {
+          dialog.showMessageBox({ type:'error', title:'فشل التفعيل', message:`تعذر تفعيل الترخيص من الرابط: ${res && res.reason ? res.reason : 'خطأ غير معروف'}` });
+        }
+      } else {
+        dialog.showMessageBox({ type:'error', title:'مفتاح غير صالح', message:'صيغة مفتاح الترخيص في الرابط غير صحيحة.' });
+      }
+    }
+  }catch(e){ console.error('Deeplink error:', e); }
+}
 
 // ===== Enhanced Customer-Specific License System =====
 function getLicensePath(){
@@ -377,6 +403,26 @@ app.whenReady().then(async () => {
     db.close();
   } catch(e){ console.error('DB eager init error:', e); }
   createWindow();
+
+  // Register custom protocol for activation links
+  try{
+    const protocol = 'quantiv';
+    // On packaged builds, this registers the app as handler
+    app.setAsDefaultProtocolClient(protocol);
+  }catch(e){ console.warn('Protocol registration failed:', e); }
+
+  // Handle deeplink on macOS
+  app.on('open-url', (event, url) => {
+    try{ event.preventDefault(); }catch(_){ }
+    pendingDeepLink = url;
+    handleDeeplink(url);
+  });
+
+  // Handle deeplink if passed as argv (Windows/Linux)
+  try{
+    const arg = (process.argv || []).find(a => typeof a === 'string' && a.startsWith('quantiv://'));
+    if(arg) { pendingDeepLink = arg; handleDeeplink(arg); }
+  }catch(_){ }
 });
 
 app.on('window-all-closed', () => {
@@ -385,6 +431,22 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
+
+// Ensure single instance and forward deeplink
+try{
+  const gotLock = app.requestSingleInstanceLock();
+  if(!gotLock){
+    app.quit();
+  } else {
+    app.on('second-instance', (_e, argv) => {
+      try{
+        const arg = (argv || []).find(a => typeof a === 'string' && a.startsWith('quantiv://'));
+        if(arg) handleDeeplink(arg);
+        if(win){ if(win.isMinimized()) win.restore(); win.focus(); }
+      }catch(err){ console.error('second-instance handler error:', err); }
+    });
+  }
+}catch(e){ console.warn('Single instance lock failed:', e); }
 
 // ===== IPC Handlers =====
 // AI key management (secure storage)

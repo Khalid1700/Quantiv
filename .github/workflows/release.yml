@@ -55,6 +55,9 @@ jobs:
           name: windows-installer
           path: dist_release
 
+      - name: Generate SHA256 checksums
+        run: sha256sum dist_release/* > dist_release/SHA256SUMS.txt
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:

@@ -252,6 +252,25 @@
     });
   }
 
+  // Auto-activate when deeplink arrives: quantiv://activate?key=...&email=...
+  if(HAS_ELECTRON && typeof window.electronAPI.onLicenseDeeplink === 'function'){
+    try{
+      window.electronAPI.onLicenseDeeplink(async (data) => {
+        try{
+          const key = String((data && data.key) || '').trim();
+          const email = String((data && data.email) || '').trim();
+          if(!key) return;
+          const result = await activateLicense(key, email);
+          if(result && result.ok){
+            try{ alert('تم تفعيل الترخيص تلقائيًا عبر الرابط.'); }catch(_){/* silent */}
+          } else {
+            try{ alert('فشل التفعيل عبر الرابط: ' + (result && result.reason ? result.reason : 'غير معروف')); }catch(_){/* silent */}
+          }
+        }catch(e){ console.error('deeplink activation error:', e); }
+      });
+    }catch(_){ /* noop */ }
+  }
+
   // Export public API
   window.LicenseManager = {
     LICENSE_STATUS,

@@ -1,0 +1,16 @@
+PackageIdentifier: Khalid1700.Quantiv
+PackageVersion: 1.0.0
+PackageLocale: en-US
+Publisher: Khalid1700
+PackageName: Quantiv
+License: Proprietary
+ShortDescription: Quantiv desktop app
+Moniker: quantiv
+Installers:
+  - Architecture: x64
+    InstallerType: exe
+    InstallerUrl: https://github.com/Khalid1700/Quantiv/releases/download/v1.0.4/Quantiv-Setup-1.0.0.exe
+    InstallerSha256: REPLACE_WITH_SHA256
+    InstallerSwitches:
+      Silent: /S
+      SilentWithProgress: /S
