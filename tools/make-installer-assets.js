@@ -26,6 +26,12 @@ async function makeHeaderBMP(){
   // Recommended NSIS header size ~ 150x57
   const outDir = path.join('public','installer');
   await ensureDir(outDir);
+  const headerOut = path.join(outDir,'installerHeader.bmp');
+  // If asset already exists, skip regeneration to avoid CI failures (sharp doesn't output BMP)
+  if (fs.existsSync(headerOut)) {
+    console.log('installerHeader.bmp exists; skipping generation');
+    return;
+  }
   const iconPath = path.join('public','icons','app-128.png');
   const headerPng = await createGradient(150, 57);
   let comp = sharp(headerPng).resize(150,57);
@@ -73,14 +79,21 @@ async function makeHeaderBMP(){
     <text x="117" y="21" text-anchor="middle" font-family="Segoe UI, Arial" font-size="10" font-weight="700" fill="url(#brandText)">By Khalid.Agents</text>
   </svg>`);
   comp = comp.composite([{ input: await sharp(labelSvg).png().toBuffer(), top: 0, left: 0 }]);
-  const bmpBuf = await comp.toFormat('bmp').toBuffer();
-  fs.writeFileSync(path.join(outDir,'installerHeader.bmp'), bmpBuf);
+  // Sharp does not support BMP output; rely on committed asset or future encoder
+  // Leave a friendly message if generation was attempted without asset
+  throw new Error('BMP output not supported by sharp; please provide public/installer/installerHeader.bmp');
 }
 
 async function makeSidebarBMP(){
   // Recommended NSIS sidebar size ~ 164x314
   const outDir = path.join('public','installer');
   await ensureDir(outDir);
+  const sidebarOut = path.join(outDir,'installerSidebar.bmp');
+  // If asset already exists, skip regeneration to avoid CI failures (sharp doesn't output BMP)
+  if (fs.existsSync(sidebarOut)) {
+    console.log('installerSidebar.bmp exists; skipping generation');
+    return;
+  }
   const iconPath = path.join('public','icons','app-256.png');
   const sidebarPng = await createGradient(164, 314);
   let comp = sharp(sidebarPng).resize(164,314);
@@ -128,8 +141,8 @@ async function makeSidebarBMP(){
     <text x="82" y="290" text-anchor="middle" font-family="Segoe UI, Arial" font-size="12" font-weight="700" fill="url(#brandText2)">By Khalid.Agents</text>
   </svg>`);
   comp = comp.composite([{ input: await sharp(labelSvg).png().toBuffer(), top: 0, left: 0 }]);
-  const bmpBuf = await comp.toFormat('bmp').toBuffer();
-  fs.writeFileSync(path.join(outDir,'installerSidebar.bmp'), bmpBuf);
+  // Sharp does not support BMP output; rely on committed asset or future encoder
+  throw new Error('BMP output not supported by sharp; please provide public/installer/installerSidebar.bmp');
 }
 
 async function main(){
