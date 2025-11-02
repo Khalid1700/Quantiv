@@ -70,8 +70,36 @@ jobs:
           name: macos-dmg
           path: App Dist macOS/*.dmg
 
+  smoke_mac:
+    needs: [build_mac]
+    runs-on: macos-latest
+    steps:
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-dmg
+          path: mac_test
+
+      - name: List DMG files
+        run: ls -la mac_test
+
+      - name: Mount DMG and verify app bundle
+        run: |
+          set -e
+          DMG="$(ls mac_test/*.dmg | head -n1)"
+          echo "Mounting $DMG"
+          hdiutil attach "$DMG" -nobrowse -mountpoint /Volumes/QuantivTest
+          echo "Contents of mounted volume:"
+          ls -la /Volumes/QuantivTest
+          if [ ! -d "/Volumes/QuantivTest/Quantiv.app" ]; then
+            echo "Quantiv.app not found in DMG volume" >&2
+            exit 1
+          fi
+          ls -la "/Volumes/QuantivTest/Quantiv.app/Contents/MacOS" || true
+          hdiutil detach /Volumes/QuantivTest
+
   publish_release:
-    needs: [build_win, build_mac]
+    needs: [build_win, smoke_mac]
     runs-on: ubuntu-latest
     steps:
       - name: Download Windows artifact
