@@ -15,7 +15,7 @@
     const brand = document.createElement('div');
     brand.className = 'brand';
     brand.innerHTML = `<img src="./icons/app-64.png" alt="" class="logo">`+
-      `<span class="name">ABT</span>`;
+      `<div class="developer-info"><div class="developer-badge"><span class="developer-text">By Khalid.Agents</span></div></div>`;
     container.appendChild(brand);
 
     const nav = document.createElement('div');

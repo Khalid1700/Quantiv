@@ -10,6 +10,9 @@
 .sidebar .brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .sidebar .brand .name{font-weight:700}
 .sidebar .brand img.logo{width:28px;height:28px}
+.sidebar .brand .developer-info{display:flex;align-items:center;justify-content:center;gap:.5rem;font-size:.75rem;color:var(--muted)}
+.sidebar .brand .developer-badge{background:var(--chip);border:1px solid var(--chip-border);border-radius:12px;padding:.25rem .5rem;backdrop-filter:blur(10px)}
+.sidebar .brand .developer-text{background:linear-gradient(90deg,var(--primary-start) 0%, var(--primary-end) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
 .nav{display:flex;flex-direction:column;gap:10px}
 .nav .item{display:flex;align-items:center;gap:10px;padding:.6rem .8rem;border-radius:12px;cursor:pointer;color:var(--fg);
   background:transparent;border:1px solid transparent}
