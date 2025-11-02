@@ -1,6 +1,6 @@
 {
   "name": "excel-business-toolkit",
-  "version": "1.0.8",
+  "version": "1.0.11",
   "description": "Business dashboards desktop app (Electron + SQLite)",
   "author": "Khalid",
   "main": "main.js",
@@ -36,7 +36,13 @@
       "icon": "public/icons/app.icns",
       "category": "public.app-category.productivity",
       "artifactName": "${productName}-${version}-mac-${arch}.${ext}",
-      "target": ["dmg"]
+      "identity": null,
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["universal"]
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
